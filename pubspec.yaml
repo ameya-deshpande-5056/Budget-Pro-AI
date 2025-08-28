@@ -1,0 +1,29 @@
+name: budget_pro_ai_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  fl_chart: ^1.0.0
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  intl: ^0.20.2
+  ml_algo: ^16.18.0
+  ml_dataframe: ^1.6.0
+  ml_linalg: ^13.12.6
+  path: ^1.9.1
+  shared_preferences: ^2.5.3
+  sqflite: ^2.4.2
+  sqflite_common_ffi_web: ^1.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
