@@ -7,6 +7,7 @@ environment:
   sdk: ^3.7.2
 
 dependencies:
+  file_picker: ^10.3.2
   fl_chart: ^1.0.0
   flutter:
     sdk: flutter
@@ -16,9 +17,11 @@ dependencies:
   ml_dataframe: ^1.6.0
   ml_linalg: ^13.12.6
   path: ^1.9.1
+  path_provider: ^2.1.5
   shared_preferences: ^2.5.3
   sqflite: ^2.4.2
   sqflite_common_ffi_web: ^1.0.0
+  universal_html: ^2.2.4
 
 dev_dependencies:
   flutter_test:

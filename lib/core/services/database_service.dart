@@ -79,7 +79,7 @@ class DatabaseService {
       await _database!.insert(Constants.transactionsTbl, {
         'id': transaction.id,
         'amount': transaction.amount,
-        'category': transaction.category,
+        'category': transaction.category.toLowerCase(),
         'date': transaction.date.millisecondsSinceEpoch,
         'isExpense': transaction.isExpense ? 1 : 0,
       }, conflictAlgorithm: ConflictAlgorithm.replace);
@@ -98,6 +98,84 @@ class DatabaseService {
     } catch (e) {
       throw Exception('Failed to clear transactions: $e');
     }
+  }
+
+  Future<String> exportToCsv() async {
+    try {
+      final transactions = await getTransactions();
+      final csvRows = <String>[];
+      csvRows.add('id,amount,category,date,isExpense'); // CSV Header
+      for (var tx in transactions) {
+        final row = [
+          tx.id,
+          tx.amount.toString(),
+          '"${tx.category.replaceAll('"', '""')}"', // Escape quotes in category
+          tx.date.millisecondsSinceEpoch.toString(),
+          tx.isExpense ? "1" : "0",
+        ].join(",");
+        csvRows.add(row);
+      }
+      return csvRows.join("\n");
+    } catch (e) {
+      throw Exception('Failed to export transactions to CSV: $e');
+    }
+  }
+
+  Future<void> importFromCsv(String csvContent) async {
+    try {
+      final lines = csvContent.split("\n");
+      if (lines.isEmpty ||
+          lines[0].trim() !=
+              'id,amount,category,date,isExpense') {
+        throw Exception('Invalid CSV format');
+      }
+      final batch = _database!.batch();
+      for (var line in lines.skip(1)) {
+        if (line.trim().isEmpty) continue;
+        final parts = _parseCsvLine(line);
+        if (parts.length != 5) {
+          throw Exception("Invalid CSV row: $line");
+        }
+        final transaction = {
+          'id': parts[0],
+          'amount': double.tryParse(parts[1]) ?? 0,
+          'category': parts[2].toLowerCase(),
+          'date': int.tryParse(parts[3]) ?? 0,
+          'isExpense': parts[4] == '1' ? 1 : 0,
+        };
+        if (transaction['amount'] == 0 || transaction['date'] == 0) {
+          throw Exception('Invalid data in CSV row: $line');
+        }
+        batch.insert(
+          'transactions',
+          transaction,
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+      await batch.commit(noResult: true);
+    } catch (e) {
+      throw Exception('Failed to import transactions from CSV: $e');
+    }
+  }
+
+  List<String> _parseCsvLine(String line) {
+    final result = <String>[];
+    bool inQuotes = false;
+    StringBuffer buffer = StringBuffer();
+    for (int i = 0; i < line.length; i++) {
+      if (line[i] == '"') {
+        inQuotes = !inQuotes;
+      } else if (line[i] == "," && !inQuotes) {
+        result.add(buffer.toString());
+        buffer.clear();
+      } else {
+        buffer.write(line[i]);
+      }
+    }
+    if (buffer.isNotEmpty) {
+      result.add(buffer.toString());
+    }
+    return result;
   }
 
   Future<void> close() async {

@@ -3,6 +3,7 @@ import 'package:budget_pro_ai_app/presentation/managers/transaction_cubit/transa
 import 'package:budget_pro_ai_app/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -20,9 +21,9 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Budgeting App',
-        debugShowCheckedModeBanner: false,
         theme: ThemeData(primarySwatch: Colors.blue),
         home: const HomeScreen(),
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

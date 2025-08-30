@@ -4,7 +4,7 @@ import 'package:budget_pro_ai_app/presentation/managers/transaction_cubit/transa
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionCubit extends Cubit<TransactionState> {
-  final DatabaseService _databaseService = DatabaseService();
+  final DatabaseService databaseService = DatabaseService();
 
   TransactionCubit() : super(TransactionState()) {
     _init();
@@ -12,8 +12,8 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   Future<void> _init() async {
     try {
-      await _databaseService.initDatabase();
-      await _loadTransactions();
+      await databaseService.initDatabase();
+      await loadTransactions();
     } catch (e) {
       emit(
         TransactionState(transactions: state.transactions, error: e.toString()),
@@ -21,9 +21,9 @@ class TransactionCubit extends Cubit<TransactionState> {
     }
   }
 
-  Future<void> _loadTransactions() async {
+  Future<void> loadTransactions() async {
     try {
-      final transactions = await _databaseService.getTransactions();
+      final transactions = await databaseService.getTransactions();
       emit(TransactionState(transactions: transactions));
     } catch (e) {
       emit(
@@ -42,8 +42,8 @@ class TransactionCubit extends Cubit<TransactionState> {
         date: date,
         isExpense: isExpense,
       );
-      await _databaseService.addTransaction(transaction);
-      await _loadTransactions();
+      await databaseService.addTransaction(transaction);
+      await loadTransactions();
     } catch (e) {
       emit(TransactionState(transactions: state.transactions, error: e.toString()));
     }
@@ -51,8 +51,8 @@ class TransactionCubit extends Cubit<TransactionState> {
 
   Future<void> clearTransactions() async {
     try {
-      await _databaseService.clearTransactions();
-      await _loadTransactions();
+      await databaseService.clearTransactions();
+      await loadTransactions();
     } catch (e) {
       emit(TransactionState(transactions: state.transactions, error: e.toString()));
     }
