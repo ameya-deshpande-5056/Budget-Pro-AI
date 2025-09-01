@@ -31,7 +31,8 @@ class PredictionService {
       header: ['month_index', 'expenses'],
     );
 
-    final regressor = LinearRegressor(df, 'expenses', fitIntercept: true);
+    // final regressor = LinearRegressor(df, 'expenses', fitIntercept: true);
+    final regressor = KnnRegressor(df, 'expenses', 5);
     final nextMonth = DataFrame.fromMatrix(
       Matrix.fromList([
         [index.toDouble()],
